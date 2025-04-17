@@ -25,14 +25,14 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// ── Disable ETag & Caching ──────────────────────────────────────────────
+// Disable ETag & Caching
 app.disable("etag");
 app.use((req, res, next) => {
   res.set("Cache-Control", "no-store, max-age=0");
   next();
 });
 
-// ── CORS & JSON Parsing & Logging ───────────────────────────────────────
+//CORS & JSON Parsing & Logging
 app.use(cors({
   origin: "http://localhost:5173",
   credentials: true,
@@ -41,7 +41,7 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan("dev"));
 
-// ── Session & Passport ──────────────────────────────────────────────────
+//Session & Passport
 app.use(session({
   secret: process.env.SESSION_SECRET || "default_session_secret",
   resave: false,
@@ -51,28 +51,28 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ── REST Routes ─────────────────────────────────────────────────────────
+//REST Routes
 app.use("/auth", authRoute);
 app.use("/api/usage", usageRoutes);
 app.use("/api/billing", billingRoutes);
 app.use("/api/invoice", invoiceRoutes);
-app.use("/api/zapier/logs", zapierLogsRoute);            // ← new
+app.use("/api/zapier/logs", zapierLogsRoute);            
 app.use("/invoices", express.static(path.join(__dirname, "invoices")));
 
-app.get("/", (req, res) => res.send("API is running 🚀"));
+app.get("/", (req, res) => res.send("API is running "));
 app.use((req, res) => res.status(404).json({ error: "Not found" }));
 
-// ── Socket.IO Setup ────────────────────────────────────────────────────
+// Socket.IO Setup
 const httpServer = http.createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: { origin: "http://localhost:5173", credentials: true }
 });
 
 io.on("connection", socket => {
-  console.log("🟢 WS client connected:", socket.id);
+  console.log("WS client connected:", socket.id);
 });
 
-// ── Mutate & Broadcast Usage Every 5s ──────────────────────────────────
+// Mutate & Broadcast Usage Every 5s 
 setInterval(() => {
   Object.entries(usageData).forEach(([email, usage]) => {
     const inc = Math.floor(Math.random() * 10) + 1;
@@ -83,8 +83,8 @@ setInterval(() => {
   });
 }, 5000);
 
-// ── Start HTTP + WS Server ─────────────────────────────────────────────
+// Start HTTP + WS Server
 const PORT = process.env.PORT || 5000;
 httpServer.listen(PORT, () =>
-  console.log(`📡 Server + Socket.IO listening on port ${PORT}`)
+  console.log(`Server + Socket.IO listening on port ${PORT}`)
 );

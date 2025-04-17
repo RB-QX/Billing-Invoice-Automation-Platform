@@ -11,6 +11,7 @@ const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// ── Middleware to check if user is authenticated ───────────────────────────
 router.post("/generate", requireAuth, async (req, res) => {
   try {
     const {
@@ -18,7 +19,7 @@ router.post("/generate", requireAuth, async (req, res) => {
       companyName = "My Company",
       invoiceNumber = "0001",
     } = req.body;
-
+    
     const email = req.user.emails[0].value;
     const billing = billingData[email];
     const usage = usageData[email];
@@ -26,7 +27,7 @@ router.post("/generate", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "No billing or usage data" });
     }
 
-    // Ensure output folder
+    // Create invoices directory if it doesn't exist
     const invoicesDir = path.join(__dirname, "..", "invoices");
     if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir);
 

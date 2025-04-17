@@ -21,7 +21,6 @@ router.get("/current_user", (req, res) => {
 router.get("/logout", (req, res, next) => {
   req.logout(err => {
     if (err) return next(err);
-    // Destroy session and clear cookie, then redirect
     req.session.destroy(() => {
       res.clearCookie("connect.sid");
       res.redirect("http://localhost:5173/");

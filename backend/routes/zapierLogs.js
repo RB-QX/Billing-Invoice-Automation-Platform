@@ -1,4 +1,3 @@
-// backend/routes/zapierLogs.js
 import express from "express";
 import requireAuth from "../middlewares/requireAuth.js";
 import { zapierLogs } from "../mock/data.js";

@@ -15,5 +15,5 @@ export const billingData = {
   }
 };
 
-// In‑memory log of Zapier webhook events
+// This is a memory log for zapier events or the invoices that we generate in form of pdf.
 export const zapierLogs = [];
