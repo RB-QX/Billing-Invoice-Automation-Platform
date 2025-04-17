@@ -4,7 +4,7 @@ A full‑stack application to authenticate users via Google OAuth, display SaaS 
 
 ---
 
-## 🔍 Overview
+## Overview
 
 This project demonstrates a 24‑hour sprint to build an automated billing and invoice platform with:
 
@@ -16,7 +16,7 @@ This project demonstrates a 24‑hour sprint to build an automated billing and i
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer          | Technologies                                      |
 | -------------- | ------------------------------------------------- |
@@ -28,7 +28,7 @@ This project demonstrates a 24‑hour sprint to build an automated billing and i
 
 ---
 
-## ⚙️ Prerequisites
+## Prerequisites
 
 - **Node.js** v14 or higher
 - **npm** (Node Package Manager)
@@ -37,7 +37,7 @@ This project demonstrates a 24‑hour sprint to build an automated billing and i
 
 ---
 
-## 🚀 Setup & Run
+## Setup & Run
 
 ### 1. Clone the Repository
 
@@ -76,7 +76,7 @@ npm run dev                      # Dev server on http://localhost:5173
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 **Backend (`backend/.env`):**
 ```env
@@ -94,7 +94,7 @@ VITE_API_BASE=http://localhost:5000
 
 ---
 
-## 📚 API Endpoints
+## API Endpoints
 
 ### Authentication
 
@@ -121,7 +121,7 @@ VITE_API_BASE=http://localhost:5000
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```
 billing-invoice-automation/       # root
@@ -143,15 +143,4 @@ billing-invoice-automation/       # root
 │   ├── tailwind.config.js
 │   └── vite.config.ts
 └── README.md                     # this file
-```
-
----
-
-## 🎉 Next Steps
-
-- Record a **demo video** showcasing the login, dashboard, invoice generation, and Zapier automation.
-- Draft a **Solution Approach** document to explain architecture decisions.
-- Prepare your **Resume** and upload everything via the assignment form.
-
-Good luck! 👍
 
