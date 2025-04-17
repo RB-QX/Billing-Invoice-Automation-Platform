@@ -1,38 +1,89 @@
-import { useState } from 'react';
+// frontend/src/components/InvoiceButton.tsx
 
-export default function InvoiceButton() {
-  const [format, setFormat] = useState<'light' | 'dark'>('light');
+import { useState } from "react";
+
+interface InvoiceButtonProps {
+  apiBase: string;
+  userLoaded: boolean;
+}
+
+export default function InvoiceButton({
+  apiBase,
+  userLoaded,
+}: InvoiceButtonProps) {
+  const [companyName, setCompanyName] = useState("");
+  const [invoiceNumber, setInvoiceNumber] = useState("");
+  const [format, setFormat] = useState<"light" | "dark">("light");
   const [loading, setLoading] = useState(false);
 
-  const handleGenerate = async () => {
+  const generateInvoice = async () => {
+    if (!companyName.trim() || !invoiceNumber.trim()) {
+      return alert("Please enter both Company Name and Invoice Number.");
+    }
+    if (!userLoaded) {
+      return alert("Your session is not ready yet—please wait.");
+    }
+
     setLoading(true);
-    const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/invoice/generate`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ format })
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (data.invoiceUrl) window.open(`${import.meta.env.VITE_API_BASE}${data.invoiceUrl}`, '_blank');
+    try {
+      const res = await fetch(`${apiBase}/api/invoice/generate`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ companyName, invoiceNumber, format }),
+      });
+
+      if (res.status === 401) {
+        throw new Error("Not authenticated – please log in again.");
+      }
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || data.details || "Server error");
+      }
+
+      window.open(`${apiBase}${data.invoiceUrl}`, "_blank");
+    } catch (err: any) {
+      console.error("Invoice generation error:", err);
+      alert(`Error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="flex gap-4 flex-wrap">
+    <div className="flex flex-col space-y-3">
+      <input
+        type="text"
+        placeholder="Company Name"
+        value={companyName}
+        onChange={(e) => setCompanyName(e.target.value)}
+        className="px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+      />
+
+      <input
+        type="text"
+        placeholder="Invoice Number"
+        value={invoiceNumber}
+        onChange={(e) => setInvoiceNumber(e.target.value)}
+        className="px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
+      />
+
       <select
         value={format}
-        onChange={(e) => setFormat(e.target.value as 'light' | 'dark')}
+        onChange={(e) => setFormat(e.target.value as "light" | "dark")}
         className="px-4 py-2 border rounded-md focus:ring focus:ring-blue-200"
       >
-        <option value="light">Light Invoice</option>
-        <option value="dark">Dark Invoice</option>
+        <option value="light">Light Theme</option>
+        <option value="dark">Dark Theme</option>
       </select>
+
       <button
-        onClick={handleGenerate}
-        disabled={loading}
+        onClick={generateInvoice}
+        disabled={!userLoaded || loading}
         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow transition disabled:opacity-50"
       >
-        {loading ? "Generating..." : "🧾 Generate Invoice"}
+        {loading ? "Generating…" : "🧾 Generate Invoice"}
       </button>
     </div>
   );
