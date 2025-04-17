@@ -1,0 +1,27 @@
+.qodo
+
+frontend/.env
+node_modules
+dist
+dist-ssr
+*.local
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo# Ignore environment files
+
+# Ignore dependencies
+*.ntvs*
+*.njsproj  *.sln
+*.sw?
+```
+obj['qodo']
+``` 
+
+# Ignore environment files
+
+# Ignore dependencies
+backend/node_modules/
+backend/.env
