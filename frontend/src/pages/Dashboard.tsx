@@ -3,6 +3,7 @@ import { io, Socket } from "socket.io-client";
 import UsageCard from "../components/UsageCard";
 import BillingCard from "../components/BillingCard";
 import InvoiceButton from "../components/InvoiceButton";
+import ZapierLogCard from "../components/ZapierLogCard";
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -78,9 +79,13 @@ const Dashboard = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between mb-10">
             <div className="flex items-center gap-4">
               <img
-                src={user.photos[0].value}
+                src={user.photos?.[0]?.value || "/default-avatar.png"}
                 alt="Profile"
-                className="w-16 h-16 rounded-full border-4 border-blue-400 shadow"
+                className="w-16 h-16 rounded-full border-4 border-blue-400 shadow object-cover"
+                onError={(e) => {
+                  // if the URL is invalid, fall back to default
+                  (e.currentTarget as HTMLImageElement).src = "/default-avatar.png";
+                }}
               />
               <div>
                 <h2 className="text-2xl font-semibold">
@@ -105,10 +110,11 @@ const Dashboard = () => {
           Your Billing Dashboard
         </h1>
 
-        {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        {/* Cards + Automation Log */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {usage && <UsageCard usage={usage} />}
           {billing && <BillingCard billing={billing} />}
+          <ZapierLogCard />
         </div>
 
         {/* Invoice Generator */}
@@ -127,3 +133,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

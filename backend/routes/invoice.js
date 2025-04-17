@@ -5,11 +5,9 @@ import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";
 import axios from "axios";
 import requireAuth from "../middlewares/requireAuth.js";
-import { billingData } from "../mock/data.js";
+import { billingData, usageData, zapierLogs } from "../mock/data.js";
 
 const router = express.Router();
-
-// Fix for ES modules: recreate __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -23,24 +21,23 @@ router.post("/generate", requireAuth, async (req, res) => {
 
     const email = req.user.emails[0].value;
     const billing = billingData[email];
-    if (!billing) {
-      return res.status(404).json({ error: "No billing data for user" });
+    const usage = usageData[email];
+    if (!billing || !usage) {
+      return res.status(404).json({ error: "No billing or usage data" });
     }
 
-    // Ensure invoices directory exists
+    // Ensure output folder
     const invoicesDir = path.join(__dirname, "..", "invoices");
     if (!fs.existsSync(invoicesDir)) fs.mkdirSync(invoicesDir);
 
-    // Build file path
     const fileName = `invoice_${email.replace(/[@.]/g, "_")}_${Date.now()}.pdf`;
     const filePath = path.join(invoicesDir, fileName);
 
-    // Create PDF
     const doc = new PDFDocument({ size: "A4", margin: 50 });
     const stream = fs.createWriteStream(filePath);
     doc.pipe(stream);
 
-    // Theme background/text
+    // Theme
     if (format === "dark") {
       doc.rect(0, 0, doc.page.width, doc.page.height).fill("#1a202c");
       doc.fillColor("#edf2f7");
@@ -48,7 +45,7 @@ router.post("/generate", requireAuth, async (req, res) => {
       doc.fillColor("#1a202c");
     }
 
-    // Header: Company & Invoice #
+    // Header
     doc
       .fontSize(18)
       .text(companyName, { align: "left" })
@@ -59,16 +56,17 @@ router.post("/generate", requireAuth, async (req, res) => {
     // Title
     doc.fontSize(20).text("Billing Invoice", { align: "center" }).moveDown();
 
-    // Billing details
+    // Details with new nomenclature
     doc
       .fontSize(12)
       .text(`Email: ${email}`)
-      .text(`Period: ${billing.currentCycleStart} – ${billing.currentCycleEnd}`)
-      .text(`Usage: ${billing.cycleUsage}`)
+      .text(`Current Bill Cycle: ${billing.currentCycleStart} – ${billing.currentCycleEnd}`)
+      .text(`Cumulative API Calls: ${usage.totalApiCalls}`)
+      .text(`Current Cycle Usage: ${billing.cycleUsage}`)
       .text(`Amount Due: ${billing.billingAmount}`)
       .moveDown(2);
 
-    // Footer timestamp
+    // Footer
     doc
       .fontSize(10)
       .text(`Generated on ${new Date().toLocaleString()}`, { align: "right" });
@@ -76,7 +74,14 @@ router.post("/generate", requireAuth, async (req, res) => {
     doc.end();
 
     stream.on("finish", () => {
-      // Trigger Zapier webhook
+      zapierLogs.unshift({
+        timestamp: new Date().toLocaleString(),
+        email,
+        invoiceUrl: `/invoices/${fileName}`,
+        companyName,
+        invoiceNumber,
+      });
+
       axios
         .post(process.env.ZAPIER_HOOK_URL, {
           email,
@@ -87,14 +92,11 @@ router.post("/generate", requireAuth, async (req, res) => {
         })
         .catch(() => {});
 
-      // Respond with URL
       res.json({ invoiceUrl: `/invoices/${fileName}` });
     });
   } catch (err) {
     console.error("Invoice generation failed:", err);
-    res
-      .status(500)
-      .json({ error: "Invoice generation failed", details: err.message });
+    res.status(500).json({ error: "Invoice generation failed", details: err.message });
   }
 });
 

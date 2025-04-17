@@ -1,3 +1,4 @@
+// backend/app.js
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -15,6 +16,7 @@ import authRoute from "./routes/auth.js";
 import usageRoutes from "./routes/usage.js";
 import billingRoutes from "./routes/billing.js";
 import invoiceRoutes from "./routes/invoice.js";
+import zapierLogsRoute from "./routes/zapierLogs.js";      // ← new
 import "./services/passport.js";
 import { usageData } from "./mock/data.js";
 
@@ -54,6 +56,7 @@ app.use("/auth", authRoute);
 app.use("/api/usage", usageRoutes);
 app.use("/api/billing", billingRoutes);
 app.use("/api/invoice", invoiceRoutes);
+app.use("/api/zapier/logs", zapierLogsRoute);            // ← new
 app.use("/invoices", express.static(path.join(__dirname, "invoices")));
 
 app.get("/", (req, res) => res.send("API is running 🚀"));

@@ -14,3 +14,6 @@ export const billingData = {
     billingAmount: "$19.99"
   }
 };
+
+// In‑memory log of Zapier webhook events
+export const zapierLogs = [];
