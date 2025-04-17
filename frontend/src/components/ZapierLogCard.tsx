@@ -25,7 +25,7 @@ export default function ZapierLogCard() {
 
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition">
-      <h2 className="text-xl font-bold text-purple-600 mb-4">🔄 Automation Log</h2>
+      <h2 className="text-xl font-bold text-purple-600 mb-4">Automation Log</h2>
       {logs.length === 0 ? (
         <p className="text-gray-500">No automations yet.</p>
       ) : (

@@ -83,7 +83,7 @@ export default function InvoiceButton({
         disabled={!userLoaded || loading}
         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl shadow transition disabled:opacity-50"
       >
-        {loading ? "Generating…" : "🧾 Generate Invoice"}
+        {loading ? "Generating…" : "Generate Invoice"}
       </button>
     </div>
   );

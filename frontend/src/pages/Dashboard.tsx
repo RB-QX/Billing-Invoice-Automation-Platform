@@ -48,7 +48,7 @@ const Dashboard = () => {
     });
 
     socket.on("connect", () =>
-      console.log("🟢 WS connected:", socket.id)
+      console.log("WS connected:", socket.id)
     );
     socket.on("usageUpdate", ({ email, usage: newUsage }) => {
       if (email === user.emails[0].value) {
@@ -56,7 +56,7 @@ const Dashboard = () => {
       }
     });
     socket.on("disconnect", (reason) =>
-      console.log("🔴 WS disconnected:", reason)
+      console.log("WS disconnected:", reason)
     );
 
     return () => {
